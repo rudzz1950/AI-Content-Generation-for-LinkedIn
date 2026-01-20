@@ -1,5 +1,3 @@
-# AI Agent Flow: Smart Content Automation System
-
 ## Overview
 A sophisticated multi-agent system that automates personal brand content creation using cutting-edge AI technologies.
 
