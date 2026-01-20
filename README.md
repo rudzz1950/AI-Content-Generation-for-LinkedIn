@@ -1,6 +1,3 @@
-## Overview
-A sophisticated multi-agent system that automates personal brand content creation using cutting-edge AI technologies.
-
 ```mermaid
 graph TB
     subgraph "Data Ingestion Layer"
@@ -486,40 +483,23 @@ RSS → Fetch → Clean → Chunk → Embed → Index → Store in ChromaDB
 
 ---
 
-### 4. Multi-Agent Architecture (LangChain)
+### 4. Multi-Agent Architecture (LangGraph)
 
 ```mermaid
-sequenceDiagram
-    participant O as Orchestrator Agent
-    participant R as Research Agent
-    participant W as Writer Agent
-    participant C as Critic Agent
-    participant I as Image Agent
-
-    O->>O: Fetch & Embed Today's News
-    O->>O: Run Anomaly Detection
-    O->>O: Get Recommendations (Top 3 Topics)
+stateDiagram-v2
+    [*] --> Research
+    Research --> Write
+    Write --> Critique
+    Critique --> CheckScore
     
-    loop For Each Topic
-        O->>R: "Research this topic deeply"
-        R-->>O: Detailed context + recent developments
-    end
-
-    O->>W: "Write a LinkedIn post with this context"
-    W-->>O: Draft post in user's tone
-
-    O->>C: "Review and improve this draft"
-    C-->>O: Feedback + improved version
+    state CheckScore <<choice>>
+    CheckScore --> Revise: Score < 8
+    CheckScore --> Approved: Score >= 8
     
-    alt Needs revision
-        O->>W: "Revise based on this feedback"
-        W-->>O: Revised post
-    end
-
-    O->>I: "Generate an image for this post"
-    I-->>O: Generated image
-
-    O->>O: Send Email + Save to Notion
+    Revise --> Critique: Loop (Max 3x)
+    Approved --> ImageGen
+    ImageGen --> Publish
+    Publish --> [*]
 ```
 
 #### Agent Definitions
@@ -696,7 +676,64 @@ LLM_CONFIGS = {
 
 ---
 
-### 7. Agent Reasoning Patterns
+### 6. LLM Configuration & Response Handling
+
+#### Orchestrator Implementation (LangGraph)
+
+```python
+# agents/orchestrator.py
+from langgraph.graph import StateGraph, END
+from typing import TypedDict, List
+
+class AgentState(TypedDict):
+    topic: str
+    context: dict
+    draft: str
+    review: dict
+    revision_count: int
+
+class OrchestratorAgent:
+    def __init__(self, writer, critic, researcher):
+        self.writer = writer
+        self.critic = critic
+        self.researcher = researcher
+        self.workflow = self._build_graph()
+        
+    def _build_graph(self):
+        workflow = StateGraph(AgentState)
+        
+        # Define Nodes
+        workflow.add_node("research", self.research_node)
+        workflow.add_node("draft", self.draft_node)
+        workflow.add_node("critique", self.critique_node)
+        workflow.add_node("revise", self.revise_node)
+        
+        # Define Edges
+        workflow.set_entry_point("research")
+        workflow.add_edge("research", "draft")
+        workflow.add_edge("draft", "critique")
+        
+        # Conditional Edge: Critique -> (Revise OR End)
+        workflow.add_conditional_edges(
+            "critique",
+            self.check_score,
+            {
+                "revise": "revise",
+                "end": END
+            }
+        )
+        
+        workflow.add_edge("revise", "critique") # Loop back
+        
+        return workflow.compile()
+
+    def check_score(self, state: AgentState):
+        if state["review"]["score"] < 8 and state["revision_count"] < 3:
+            return "revise"
+        return "end"
+```
+
+#### Response Modes
 
 ```mermaid
 graph LR
@@ -1885,6 +1922,7 @@ schedule
 google-genai
 groq                        # Critic Agent (free Llama 3.3 70B)
 langchain>=0.3.0
+langgraph                   # State Machine Orchestration
 langchain-google-genai
 langchain-community
 langchain-core
