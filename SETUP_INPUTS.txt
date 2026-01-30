@@ -1,0 +1,120 @@
+================================================================================
+                    AI AGENT FLOW - REQUIRED INPUTS
+================================================================================
+
+This file lists everything you need to provide to run the Weekly Article Flow
+content automation system.
+
+================================================================================
+1. API KEYS (Required)
+================================================================================
+
+These go in your .env file:
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ API Key              │ Where to Get It                    │ Cost           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ GEMINI_API_KEY       │ https://aistudio.google.com        │ Free tier      │
+│ PERPLEXITY_API_KEY   │ https://perplexity.ai/settings/api │ ~$5/month      │
+│ GROQ_API_KEY         │ https://console.groq.com           │ Free tier      │
+│ LANGSMITH_API_KEY    │ https://smith.langchain.com        │ Free tier      │
+│ NOTION_API_TOKEN     │ https://notion.so/my-integrations  │ Free           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Optional:
+- OPENAI_API_KEY (for GPT fallback) - https://platform.openai.com/api-keys
+
+
+================================================================================
+2. NOTION INTEGRATION (Post Storage)
+================================================================================
+
+Store your generated LinkedIn posts in Notion for review and archival.
+
+Your Database: https://cosmic-bone-56d.notion.site/LinkedIn-Posts-2ecb15cc6736806e9dd7f174b4a1dbe0
+
+Setup Steps:
+1. Go to https://notion.so/my-integrations
+2. Click "New Integration" → Name it "Weekly Article Flow"
+3. Copy the "Internal Integration Secret" (this is your NOTION_API_TOKEN)
+4. Open your LinkedIn Posts database in Notion
+5. Click Share → Add connections → Select your integration
+6. Copy Database ID from the URL (the long string before ?v=)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Setting              │ Value                              │ Example        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ NOTION_API_TOKEN     │ Integration secret from step 3     │ secret_xxx...  │
+│ NOTION_DATABASE_ID   │ ID from database URL               │ 2ecb15cc6736...│
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+3. USER PREFERENCES (Recommended)
+================================================================================
+
+To customize content for YOUR personal brand:
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Preference           │ What to Provide                    │ Example        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ PREFERRED_TOPICS     │ Comma-separated topics you like    │ LLMs,Startups  │
+│ EXCLUDED_TOPICS      │ Topics to skip                     │ Crypto,NFT     │
+│ POST_STYLE           │ professional/casual/technical      │ professional   │
+│ MAX_POST_LENGTH      │ Word count for LinkedIn post       │ 200            │
+│ ENABLE_MEDIUM_BYPASS │ Enable Freedium mirror bypass      │ true/false     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+4. SAMPLE .env FILE
+================================================================================
+
+Copy this template and fill in your values:
+
+------- START OF .env FILE -------
+
+# API Keys (Required)
+GEMINI_API_KEY=your_gemini_key_here
+PERPLEXITY_API_KEY=your_perplexity_key_here
+GROQ_API_KEY=your_groq_key_here
+LANGSMITH_API_KEY=your_langsmith_key_here
+NOTION_API_TOKEN=your_notion_token_here
+
+# Configuration
+NOTION_DATABASE_ID=your_notion_db_id_here
+ENABLE_MEDIUM_BYPASS=false
+
+# User Preferences
+PREFERRED_TOPICS=LLMs,AI Agents,Startups
+EXCLUDED_TOPICS=Crypto,NFT
+POST_STYLE=professional
+
+# LangSmith Tracing
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_PROJECT=weekly-article-flow
+
+------- END OF .env FILE -------
+
+
+================================================================================
+5. ESTIMATED COSTS
+================================================================================
+
+Monthly cost estimate for typical usage:
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Service              │ Usage                              │ Cost/Month     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Gemini API           │ Writer + Image Gen                 │ $0 (free tier) │
+│ Perplexity API       │ Deep Research (~90 queries)        │ $5-10          │
+│ Groq API             │ Critic Agent (Llama 3.3)           │ $0 (free tier) │
+│ LangSmith            │ Tracing                            │ $0 (free tier) │
+│ ChromaDB             │ Vector Search (Local)              │ $0 (Free)      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ TOTAL                │                                    │ $5-10/month    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+Questions? Check the implementation_plan.md for detailed architecture.
+================================================================================

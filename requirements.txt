@@ -1,0 +1,27 @@
+# Core
+python-dotenv
+schedule
+requests
+beautifulsoup4
+feedparser
+
+# LLMs & Agents
+google-generativeai         # Correct package name
+openai                      # Critic Agent (GPT-4o)
+langchain>=0.3.0
+langgraph                   # Orchestrator
+langchain-google-genai
+langchain-community
+langchain-core
+
+# Intelligence
+sentence-transformers
+chromadb
+transformers
+torch
+accelerate
+
+# Utils
+notion-client
+PyPDF2
+Pillow
